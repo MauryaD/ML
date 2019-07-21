@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+dataset = pd.read_csv('Position_Salaries.csv')
+X = dataset.iloc[:,1:2].values          #in polynonial LR X must be a matrix not vector
+y = dataset.iloc[:,2].values            #y is vector
+
+'''from sklearn.model_selection import train_test_spilt'''      # cz DS is very small hence, we'll take all data to train our model
+#LR model fitting
+from sklearn.linear_model import LinearRegression
+linreg = LinearRegression()
+linreg.fit(X,y)
+
+#polynomial LR fitting
+from sklearn.preprocessing import PolynomialFeatures
+poly_reg = PolynomialFeatures(degree = 4)           #transformer object, this will transform X into multiple X polynomials
+X_poly = poly_reg.fit_transform(X)
+
+lin_reg = LinearRegression()
+lin_reg.fit(X_poly, y)
+
+#visualising linear regression result
+plt.scatter(X,y, color = 'r')
+plt.plot(X, linreg.predict(X), color = 'b')
+plt.xlabel("Level")
+plt.ylabel("Salary")
+plt.title("Level vs Salary")
+plt.show()
+
+#visualising polynomail LR result
+x_grid = np.arange(min(X), max(X), 0.1)
+x_grid = x_grid.reshape((len(x_grid), 1))
+plt.scatter(X,y, color = 'r')
+plt.plot(x_grid, lin_reg.predict(poly_reg.fit_transform(x_grid)), color = 'b')
+plt.xlabel("Level")
+plt.ylabel("Salary")
+plt.title("Level vs Salary(Polynomial LR)")
+plt.show()
+
+#Predicting the result using LR
+level = float(input("Enter your position level:"))
+linreg.predict(np.array(level).reshape(1,-1))
+
+#Predicting the result using Polynomial LR
+level = float(input("Enter your position level:"))
+lin_reg.predict(poly_reg.fit_transform(np.array(level).reshape(1,-1)))
+
+
+
